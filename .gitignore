@@ -1,1 +1,5 @@
+# contain sensitive information
 tokenfile
+praw.ini
+# editor files
+.vscode/*
