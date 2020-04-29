@@ -6,7 +6,7 @@ with open("tokenfile", "r") as tokenfile:
 print(token)
 
 client = discord.Client()
-
+reddit = praw.Reddit("bot")
 @client.event
 async def on_ready():
 		print("logged in as {0.user}".format(client))
@@ -19,6 +19,7 @@ async def on_message(message):
 		return
 	if message.content.startswith("~wip"):
 		await message.channel.send("This bot is a work in progress.")
+	
 	
 
 client.run(token)
