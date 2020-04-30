@@ -7,15 +7,15 @@ with open("tokenfile", "r") as tokenfile:
 with open("helpmessage.json", "r") as rawhelpmessage:
 	jsonhelpmessage = json.loads(rawhelpmessage.read())
 	print(jsonhelpmessage)
-	jsonhelpmessage.help.strdescription = "\n".join(jsonhelpmessage.help.description)
+	jsonhelpmessage["help"]["strdescription"] = "\n".join(jsonhelpmessage["help"]["description"])
 
 client = discord.Client()
 reddit = praw.Reddit("bot")
 prefix = "~"
 helpmessage = discord.Embed(
-	title=jsonhelpmessage.help.title,
-	description=jsonhelpmessage.help.strdescription,
-	color=discord.Color.from_rgb(jsonhelpmessage.help.color)
+	title=jsonhelpmessage["help"]["title"],
+	description=jsonhelpmessage["help"]["strdescription"],
+	color=discord.Color.from_rgb(jsonhelpmessage["help"]["color"][0],jsonhelpmessage["help"]["color"][1],jsonhelpmessage["help"]["color"][2])
 )
 
 
@@ -32,7 +32,7 @@ async def on_message(message):
 	args = message.content.replace(prefix,"")
 	argslist = args.split(" ")
 	if message.content.startswith("{0}bot".format(prefix)):
-		if(argslist[0] == help):
+		if(argslist[1] == "help"):
 			await message.channel.send(embed=helpmessage)
 		return
 	if message.content.startswith(prefix):
