@@ -59,9 +59,7 @@ async def on_message(message):
 	if not message.content.startswith(prefixes[str(message.guild.id)]):
 		return
 	args = message.content.replace(prefixes[str(message.guild.id)],"")
-	print(prefixes[str(message.guild.id)])
 	argslist = args.split(" ")
-	print(argslist)
 	if message.content.startswith("{0}bot".format(prefixes[str(message.guild.id)])):
 		if(argslist[1] == "help"):
 			await message.channel.send(embed=helpmessage)
@@ -82,11 +80,18 @@ async def on_message(message):
 			if(stickytest.stickied):
 				stickiedposts += 1
 		for submission in subreddit.hot(limit=int(argslist[1]) + stickiedposts):
+			if submission.is_self:
+				content = submission.selftext
+			else:
+				content = submission.url 
 			if(submission.stickied):
 				continue
 			if(submission.over_18 and not message.channel.is_nsfw()):
 				await message.channel.send("NSFW post. Please try again in an NSFW channel.")
 			else:
-				await message.channel.send("Hot post from r/{0}: {1} {2}".format(subreddit,submission.title,submission.url))
+				if submission.is_self:
+					await message.channel.send("Hot post from r/{0}:".format(subreddit),embed=discord.Embed(title="{0}".format(submission.title),description="{0}".format(content)))
+				else:
+					await message.channel.send("Hot post from r/{0}: `{1}`\n{2}".format(subreddit,submission.title,content))
 
 client.run(token)
