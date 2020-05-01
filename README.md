@@ -26,4 +26,6 @@ You can learn about praw.ini [here](https://praw.readthedocs.io/en/latest/gettin
 
 Invite your bot to the discord server(s) of your choice and run the file.
 
-Alternatively, you can just use [this](https://discordapp.com/api/oauth2/authorize?client_id=705130799082635345&permissions=0&scope=bot) bot that I use.
+Alternatively, you can just use [this](https://discordapp.com/api/oauth2/authorize?client_id=705130799082635345&permissions=0&scope=bot) pre-running bot that I use.
+
+If you want to test the bot without inviting it, or get testing + development information, join [this](https://discord.gg/uEADNr) discord server.
