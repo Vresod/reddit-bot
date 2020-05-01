@@ -9,5 +9,19 @@
 			"~bot prefix {string} (Changes the prefix for all commands)"
 		],
 		"color": [255,127,0]
+	},
+	"prefix_success": {
+		"title": "Prefix Changed",
+		"description": [
+			"The prefix has been changed."
+		],
+		"color": [255,127,0]
+	},
+	"prefix_failure": {
+		"title": "Task Failed",
+		"description": [
+			"You do not have the correct permissions to change the prefix."
+		],
+		"color": [255,127,0]
 	}
 }

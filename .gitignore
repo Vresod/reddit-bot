@@ -3,3 +3,5 @@ tokenfile
 praw.ini
 # editor files
 .vscode/*
+# server-specific settings
+runtime/*
