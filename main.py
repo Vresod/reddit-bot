@@ -90,20 +90,15 @@ async def on_message(message):
 			if(submission.over_18 and not message.channel.is_nsfw()):
 				await message.channel.send("NSFW post. Please try again in an NSFW channel.")
 			else:
+				temp_embed = discord.Embed(
+					title=submission.title,
+					url=submission.shortlink,
+					color=discord.Color.from_rgb(255,127,0)
+				)
 				if submission.is_self:
-					temp_embed = discord.Embed(
-						title=submission.title,
-						url=submission.shortlink,
-						description=content
-					)
-					await message.channel.send("Hot post from r/{0}:".format(subreddit),embed=temp_embed)
+					temp_embed.description = content
 				else:
-					temp_embed = discord.Embed(
-						title=submission.title,
-						url=submission.shortlink
-					)
-					print(content)
-					temp_embed.set_thumbnail(str(content))
-					await message.channel.send("Hot post from r/{0}:".format(subreddit),embed=temp_embed)
+					temp_embed.set_image(url=content)
+				await message.channel.send("Hot post from r/{0}:".format(subreddit),embed=temp_embed)
 
 client.run(token)
