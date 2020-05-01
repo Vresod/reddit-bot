@@ -1,27 +1,32 @@
 {
+	"default_color":[255,127,0],
 	"help": {
 		"title": "Bot Commands",
 		"descriptionreference": "https://github.com/Vresod/reddit-bot\n~{subreddit} <limit> <listing> (Get posts from a subreddit)\n~bot help (Shows this help message)",
 		"description": [
-			"https://github.com/Vresod/reddit-bot",
 			"~{subreddit} <limit> <listing> (Get posts from a subreddit)",
 			"~bot help (Shows this help message)",
-			"~bot prefix {string} (Changes the prefix for all commands)"
-		],
-		"color": [255,127,0]
+			"~bot prefix {string} (Changes the prefix for all commands)",
+			"~bot repo (Shows developer information)"
+		]
 	},
 	"prefix_success": {
 		"title": "Prefix Changed",
 		"description": [
 			"The prefix has been changed."
-		],
-		"color": [255,127,0]
+		]
 	},
 	"prefix_failure": {
 		"title": "Task Failed",
 		"description": [
 			"You do not have the correct permissions to change the prefix."
-		],
-		"color": [255,127,0]
+		]
+	},
+	"repo": {
+		"title": "Git/Developer Information",
+		"description": [
+			"URL: https://github.com/Vresod/reddit-bot.git",
+			"Language: Python"
+		]
 	}
 }

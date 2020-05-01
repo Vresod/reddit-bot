@@ -17,6 +17,7 @@ with open("helpmessage.json", "r") as rawhelpmessage:
 	jsonhelpmessage["help"]["strdescription"] = "\n".join(jsonhelpmessage["help"]["description"])
 	jsonhelpmessage["prefix_success"]["strdescription"] = "\n".join(jsonhelpmessage["prefix_success"]["description"])
 	jsonhelpmessage["prefix_failure"]["strdescription"] = "\n".join(jsonhelpmessage["prefix_failure"]["description"])
+	jsonhelpmessage["repo"]["strdescription"] = "\n".join(jsonhelpmessage["repo"]["description"])
 if(not file_exists("./runtime/prefixes.json")):
 	with open("./runtime/prefixes.json","w") as tempprefixfile:
 		tempprefixfile.write("{}")
@@ -26,21 +27,10 @@ with open("./runtime/prefixes.json","r") as rawprefixes:
 client = discord.Client()
 reddit = praw.Reddit("bot")
 
-helpmessage = discord.Embed(
-	title=jsonhelpmessage["help"]["title"],
-	description=jsonhelpmessage["help"]["strdescription"],
-	color=discord.Color.from_rgb(jsonhelpmessage["help"]["color"][0],jsonhelpmessage["help"]["color"][1],jsonhelpmessage["help"]["color"][2])
-)
-prefixsuccessmessage = discord.Embed(
-	title=jsonhelpmessage["prefix_success"]["title"],
-	description=jsonhelpmessage["prefix_success"]["strdescription"],
-	color=discord.Color.from_rgb(jsonhelpmessage["prefix_success"]["color"][0],jsonhelpmessage["prefix_success"]["color"][1],jsonhelpmessage["prefix_success"]["color"][2])
-)
-prefixfailuremessage = discord.Embed(
-	title=jsonhelpmessage["prefix_failure"]["title"],
-	description=jsonhelpmessage["prefix_failure"]["strdescription"],
-	color=discord.Color.from_rgb(jsonhelpmessage["prefix_failure"]["color"][0],jsonhelpmessage["prefix_failure"]["color"][1],jsonhelpmessage["prefix_failure"]["color"][2])
-)
+helpmessage = discord.Embed(title=jsonhelpmessage["help"]["title"],description=jsonhelpmessage["help"]["strdescription"],color=discord.Color.from_rgb(jsonhelpmessage["default_color"][0],jsonhelpmessage["default_color"][1],jsonhelpmessage["default_color"][2]))
+prefixsuccessmessage = discord.Embed(title=jsonhelpmessage["prefix_success"]["title"],description=jsonhelpmessage["prefix_success"]["strdescription"],color=discord.Color.from_rgb(jsonhelpmessage["default_color"][0],jsonhelpmessage["default_color"][1],jsonhelpmessage["default_color"][2]))
+prefixfailuremessage = discord.Embed(title=jsonhelpmessage["prefix_failure"]["title"],description=jsonhelpmessage["prefix_failure"]["strdescription"],color=discord.Color.from_rgb(jsonhelpmessage["default_color"][0],jsonhelpmessage["default_color"][1],jsonhelpmessage["default_color"][2]))
+repomessage = discord.Embed(title=jsonhelpmessage["repo"]["title"],description=jsonhelpmessage["repo"]["strdescription"],color=discord.Color.from_rgb(jsonhelpmessage["default_color"][0],jsonhelpmessage["default_color"][1],jsonhelpmessage["default_color"][2]))
 
 @client.event
 async def on_guild_join(server):
@@ -73,6 +63,8 @@ async def on_message(message):
 			prefixesfile = open("./runtime/prefixes.json", "w")
 			prefixesfile.write(json.dumps(prefixes))
 			prefixesfile.close()
+		if(argslist[1] == "repo"):
+			await message.channel.send(embed=repomessage)
 		return
 	if message.content.startswith(prefixes[str(message.guild.id)]):
 		subreddit = reddit.subreddit(argslist[0])
@@ -93,7 +85,7 @@ async def on_message(message):
 				temp_embed = discord.Embed(
 					title=submission.title,
 					url=submission.shortlink,
-					color=discord.Color.from_rgb(255,127,0)
+					color=discord.Color.from_rgb(jsonhelpmessage["default_color"][0],jsonhelpmessage["default_color"][1],jsonhelpmessage["default_color"][2])
 				)
 				if submission.is_self:
 					temp_embed.description = content
