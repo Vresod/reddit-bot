@@ -25,6 +25,7 @@ with open("./runtime/prefixes.json","r") as rawprefixes:
 
 client = discord.Client()
 reddit = praw.Reddit("bot")
+
 helpmessage = discord.Embed(
 	title=jsonhelpmessage["help"]["title"],
 	description=jsonhelpmessage["help"]["strdescription"],
@@ -83,15 +84,26 @@ async def on_message(message):
 			if submission.is_self:
 				content = submission.selftext
 			else:
-				content = submission.url 
+				content = submission.url
 			if(submission.stickied):
 				continue
 			if(submission.over_18 and not message.channel.is_nsfw()):
 				await message.channel.send("NSFW post. Please try again in an NSFW channel.")
 			else:
 				if submission.is_self:
-					await message.channel.send("Hot post from r/{0}:".format(subreddit),embed=discord.Embed(title="{0}".format(submission.title),description="{0}".format(content)))
+					temp_embed = discord.Embed(
+						title=submission.title,
+						url=submission.shortlink,
+						description=content
+					)
+					await message.channel.send("Hot post from r/{0}:".format(subreddit),embed=temp_embed)
 				else:
-					await message.channel.send("Hot post from r/{0}: `{1}`\n{2}".format(subreddit,submission.title,content))
+					temp_embed = discord.Embed(
+						title=submission.title,
+						url=submission.shortlink
+					)
+					print(content)
+					temp_embed.set_thumbnail(str(content))
+					await message.channel.send("Hot post from r/{0}:".format(subreddit),embed=temp_embed)
 
 client.run(token)
