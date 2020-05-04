@@ -29,3 +29,9 @@ Invite your bot to the discord server(s) of your choice and run the file.
 Alternatively, you can just use [this](https://discordapp.com/api/oauth2/authorize?client_id=705130799082635345&permissions=0&scope=bot) pre-running bot that I use.
 
 If you want to test the bot without inviting it, or get testing + development information, join [this](https://discord.gg/yjr7mNA) discord server.
+
+## Notes
+
+To server owners: if someone says to invite the bot, make sure that you either trust the version of the bot that they have or that it's the official version of the bot. If the bot on your server is custom, it could have devastating consequences for the server.
+
+This applies to any discord bot, not just mine.

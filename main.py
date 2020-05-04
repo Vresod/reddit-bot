@@ -1,6 +1,7 @@
 import discord
 import praw # "python reddit api wrapper"
 import json
+from time import sleep
 
 def file_exists(path):
 	try:
@@ -91,6 +92,7 @@ async def on_message(message):
 					temp_embed.description = content
 				else:
 					temp_embed.set_image(url=content)
-				await message.channel.send("Hot post from r/{0}:".format(subreddit),embed=temp_embed)
+				await message.channel.send("Hot post from r/{0}:".format(submission.subreddit),embed=temp_embed)
+				sleep(0.5)
 
 client.run(token)
