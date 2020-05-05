@@ -69,6 +69,7 @@ async def on_message(message):
 		return
 	if message.content.startswith(prefixes[str(message.guild.id)]):
 		subreddit = reddit.subreddit(argslist[0])
+		listing = ""
 		if argslist[2] == "hot":
 			listing = subreddit.hot
 		if argslist[2] == "top":
@@ -100,6 +101,7 @@ async def on_message(message):
 					url=submission.shortlink,
 					color=discord.Color.from_rgb(jsonhelpmessage["default_color"][0],jsonhelpmessage["default_color"][1],jsonhelpmessage["default_color"][2])
 				)
+				temp_embed.set_footer(text="posted by u/{0}".format(submission.author))
 				if submission.is_self:
 					temp_embed.description = content
 				else:
