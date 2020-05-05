@@ -69,11 +69,23 @@ async def on_message(message):
 		return
 	if message.content.startswith(prefixes[str(message.guild.id)]):
 		subreddit = reddit.subreddit(argslist[0])
+		if argslist[2] == "hot":
+			listing = subreddit.hot
+		if argslist[2] == "top":
+			listing = subreddit.top
+		if argslist[2] == "new":
+			listing = subreddit.new
+		if argslist[2] == "random":
+			listing = subreddit.random
+		if argslist[2] == "rising":
+			listing = subreddit.rising
+		if argslist[2] == "controversial":
+			listing = subreddit.controversial
 		stickiedposts = 0
-		for stickytest in subreddit.hot(limit=2):
+		for stickytest in listing(limit=2):
 			if(stickytest.stickied):
 				stickiedposts += 1
-		for submission in subreddit.hot(limit=int(argslist[1]) + stickiedposts):
+		for submission in listing(limit=int(argslist[1]) + stickiedposts):
 			if submission.is_self:
 				content = submission.selftext
 			else:
@@ -92,7 +104,7 @@ async def on_message(message):
 					temp_embed.description = content
 				else:
 					temp_embed.set_image(url=content)
-				await message.channel.send("Hot post from r/{0}:".format(submission.subreddit),embed=temp_embed)
+				await message.channel.send("{0} post from r/{1}:".format(argslist[2].title(),submission.subreddit),embed=temp_embed)
 				sleep(0.5)
 
 client.run(token)
