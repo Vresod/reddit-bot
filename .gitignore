@@ -5,3 +5,5 @@ praw.ini
 .vscode/*
 # server-specific settings
 runtime/*
+# i dont know what this is but i dont think it should be here. please make a pr changing this line if you know what it is
+__pycache__/*

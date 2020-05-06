@@ -2,14 +2,7 @@ import discord
 import praw # "python reddit api wrapper"
 import json
 import time
-
-def file_exists(path):
-	try:
-		with open(path,"r") as x:
-			x.read()
-			return True
-	except:
-		return False
+import extra
 
 with open("tokenfile", "r") as tokenfile:
 	token=tokenfile.read()
@@ -19,7 +12,7 @@ with open("helpmessage.json", "r") as rawhelpmessage:
 	jsonhelpmessage["prefix_success"]["strdescription"] = "\n".join(jsonhelpmessage["prefix_success"]["description"])
 	jsonhelpmessage["prefix_failure"]["strdescription"] = "\n".join(jsonhelpmessage["prefix_failure"]["description"])
 	jsonhelpmessage["repo"]["strdescription"] = "\n".join(jsonhelpmessage["repo"]["description"])
-if(not file_exists("./runtime/prefixes.json")):
+if(not extra.file_exists("./runtime/prefixes.json")):
 	with open("./runtime/prefixes.json","w") as tempprefixfile:
 		tempprefixfile.write("{}")
 with open("./runtime/prefixes.json","r") as rawprefixes:
@@ -43,9 +36,6 @@ async def on_guild_join(server):
 @client.event
 async def on_ready():
 	print("logged in as {0.user}".format(client))
-	while True:
-		time.sleep(300)
-		print("Still active as of {0}".format(time.asctime()))
 
 @client.event
 async def on_message(message):
@@ -53,8 +43,11 @@ async def on_message(message):
 		return
 	if not message.content.startswith(prefixes[str(message.guild.id)]):
 		return
-	args = message.content.replace(prefixes[str(message.guild.id)],"")
-	argslist = args.split(" ")
+	args = message.content.replace(prefixes[str(message.guild.id)],"") # args is everything after the prefix
+	argslist = args.split(" ") # gets args as a list. obviously.
+	if(extra.get_sanitized(argslist) == False): # see extra.py
+		await message.channel.send("Your message could not be processed. Make sure you're following the rules defined in `{0}bot help`".format(prefixes[str(message.guild.id)]))
+		return
 	if message.content.startswith("{0}bot".format(prefixes[str(message.guild.id)])):
 		if(argslist[1] == "help"):
 			await message.channel.send(embed=helpmessage)
@@ -80,7 +73,7 @@ async def on_message(message):
 		if argslist[2] == "new":
 			listing = subreddit.new
 		if argslist[2] == "random":
-			listing = subreddit.random
+			listing = subreddit.random_rising
 		if argslist[2] == "rising":
 			listing = subreddit.rising
 		if argslist[2] == "controversial":
@@ -109,6 +102,8 @@ async def on_message(message):
 					temp_embed.description = content
 				else:
 					temp_embed.set_image(url=content)
+				if(len(content) > 2000):
+					await message.channel.send("This post surpasses the 2000 character limit.")
 				await message.channel.send("{0} post from r/{1}:".format(argslist[2].title(),submission.subreddit),embed=temp_embed)
 				time.sleep(0.5)
 
