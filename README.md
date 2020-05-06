@@ -34,4 +34,4 @@ If you want to test the bot without inviting it, or get testing + development in
 
 To server owners: if someone says to invite the bot, make sure that you either trust the version of the bot that they have or that it's the official version of the bot. If the bot on your server is custom, it could have devastating consequences for the server. This applies to any discord bot, not just mine.
 
-I do not recommend setting the prefix to nothing, or "". If you need to, use a version prior [this](https://github.com/Vresod/reddit-bot/commit/8bf94a0cbc4bab4bc57c6b8ea46e8ee3f27b2e7e) commit. If you don't, it will tell you that you formatted your command wrong every time someone sends a message.
+I do not recommend setting the prefix to nothing, or "". You can't do it, even. If you NEED to have the prefix set to nothing, use a version prior to 8bf94a0. If you don't, it will tell you that you formatted your command wrong every time someone sends a message.
