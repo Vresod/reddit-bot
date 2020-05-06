@@ -1,7 +1,7 @@
 import discord
 import praw # "python reddit api wrapper"
 import json
-from time import sleep
+import time
 
 def file_exists(path):
 	try:
@@ -35,14 +35,17 @@ repomessage = discord.Embed(title=jsonhelpmessage["repo"]["title"],description=j
 
 @client.event
 async def on_guild_join(server):
-	prefixes[server.id] = "~"
+	prefixes[server.id] = "~" # This is the default prefix
 	prefixesfile = open("./runtime/prefixes.json", "w")
 	prefixesfile.write(json.dumps(prefixes))
 	prefixesfile.close()
 
 @client.event
 async def on_ready():
-		print("logged in as {0.user}".format(client))
+	print("logged in as {0.user}".format(client))
+	while True:
+		time.sleep(300)
+		print("Still active as of {0}".format(time.asctime()))
 
 @client.event
 async def on_message(message):
@@ -107,6 +110,6 @@ async def on_message(message):
 				else:
 					temp_embed.set_image(url=content)
 				await message.channel.send("{0} post from r/{1}:".format(argslist[2].title(),submission.subreddit),embed=temp_embed)
-				sleep(0.5)
+				time.sleep(0.5)
 
 client.run(token)
