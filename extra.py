@@ -1,6 +1,19 @@
-def test_if_can_be_converted_to_int(integer_as_string): # i dont know what to name this. i need an equivalent to function(args){return args} in javascript
+# needed for is_real_subreddit()
+import praw
+reddit = praw.Reddit("bot")
+
+# i dont know what to name this. i need an equivalent to function(args){return args} in javascript
+def test_if_can_be_converted_to_int(integer_as_string):
 	try:
 		int(integer_as_string)
+		return True
+	except:
+		return False
+# uses praw errors to check for real subs
+def is_real_subreddit(unknown_subreddit):
+	try:
+		for submission in reddit.subreddit(unknown_subreddit).hot(limit=1):
+			submission.title
 		return True
 	except:
 		return False
@@ -12,7 +25,7 @@ def get_sanitized(argumentlist):
 			(len(argumentlist) == 2 and argumentlist[0] + argumentlist[1] == "bothelp") or
 			(len(argumentlist) == 2 and argumentlist[0] + argumentlist[1] == "botrepo") or
 			(len(argumentlist) == 3 and argumentlist[0] + argumentlist[1] == "botprefix") or
-			(len(argumentlist) == 3 and test_if_can_be_converted_to_int(argumentlist[1]))
+			(len(argumentlist) == 3 and is_real_subreddit(argumentlist[0]) and test_if_can_be_converted_to_int(argumentlist[1]))
 		)
 	):
 		return True
