@@ -1,6 +1,9 @@
 
 # Reddit Bot
 
+[![Join the chat at https://gitter.im/reddit-bot/community](https://badges.gitter.im/reddit-bot/community.svg)](https://gitter.im/reddit-bot/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+
 This discord bot adds "commands" to discord to access reddit subreddits.
 
 ## Coding Style
