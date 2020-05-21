@@ -39,3 +39,10 @@ def file_exists(path):
 			return True
 	except:
 		return False
+# determine if a dictionary contains a thing
+def dictionary_contains(dictionary, thing):
+	try:
+		dictionary[str(thing)]
+		return True
+	except:
+		return False

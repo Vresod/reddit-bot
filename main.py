@@ -14,16 +14,13 @@ with open("helpmessage.json", "r") as rawhelpmessage:
 	jsonhelpmessage["prefix_success"]["strdescription"] = "\n".join(jsonhelpmessage["prefix_success"]["description"])
 	jsonhelpmessage["prefix_failure"]["strdescription"] = "\n".join(jsonhelpmessage["prefix_failure"]["description"])
 	jsonhelpmessage["repo"]["strdescription"] = "\n".join(jsonhelpmessage["repo"]["description"])
-if(not extra.file_exists("./runtime/prefixes.json")):
-	with open("./runtime/prefixes.json","w") as tempprefixfile:
-		tempprefixfile.write("{}")
+
 with open("./runtime/prefixes.json","r") as rawprefixes:
 	prefixes = json.loads(rawprefixes.read())
 
 istatus = discord.Status.online
 cstatus = discord.Game(name="reddit.com")
 
-print(cstatus.name)
 
 client = discord.Client(status=istatus,activity=cstatus)
 reddit = praw.Reddit("bot")
@@ -43,7 +40,7 @@ async def on_message(message):
 	if message.author == client.user or message.author.bot:
 		return
 	serverprefix = ""
-	if hasattr(prefixes, str(message.guild.id)):
+	if (extra.dictionary_contains(prefixes, str(message.guild.id))):
 		serverprefix = prefixes[str(message.guild.id)]
 	else:
 		serverprefix = "~"
@@ -62,10 +59,10 @@ async def on_message(message):
 				await message.channel.send(embed=prefixfailuremessage)
 				return
 			prefixes[str(message.guild.id)] = argslist[2]
-			await message.channel.send(embed=prefixsuccessmessage)
 			prefixesfile = open("./runtime/prefixes.json", "w")
 			prefixesfile.write(json.dumps(prefixes))
 			prefixesfile.close()
+			await message.channel.send(embed=prefixsuccessmessage)
 		if(argslist[1] == "repo"):
 			await message.channel.send(embed=repomessage)
 		return
@@ -90,7 +87,10 @@ async def on_message(message):
 				stickiedposts += 1
 		for submission in listing(limit=int(argslist[1]) + stickiedposts):
 			if submission.is_self:
-				content = submission.selftext
+				if(len(submission.selftext) > 2048): # dealing with the limit on embedded text
+					content = submission.selftext[:2045] + "..."
+				else:
+					content = submission.selftext
 			else:
 				content = submission.url
 			if(submission.stickied):
@@ -98,8 +98,12 @@ async def on_message(message):
 			if(submission.over_18 and not message.channel.is_nsfw()):
 				await message.channel.send("NSFW post. Please try again in an NSFW channel.")
 			else:
+				if(len(submission.title) > 256): # title length limit
+					sanitized_title = submission.title[:253] + "..."
+				else:
+					sanitized_title = submission.title
 				temp_embed = discord.Embed(
-					title=submission.title,
+					title=sanitized_title,
 					url=submission.shortlink,
 					color=discord.Color.from_rgb(jsonhelpmessage["default_color"][0],jsonhelpmessage["default_color"][1],jsonhelpmessage["default_color"][2])
 				)
@@ -108,8 +112,6 @@ async def on_message(message):
 					temp_embed.description = content
 				else:
 					temp_embed.set_image(url=content)
-				if(len(content) > 2000):
-					await message.channel.send("This post surpasses the 2000 character limit.")
 				await message.channel.send("{0} post from r/{1}:".format(argslist[2].title(),submission.subreddit),embed=temp_embed)
 				time.sleep(0.5)
 
