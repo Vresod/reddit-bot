@@ -49,7 +49,7 @@ async def on_message(message):
 	args = message.content.replace(serverprefix,"") # args is everything after the prefix
 	argslist = args.split(" ") # gets args as a list. obviously.
 	if(extra.get_sanitized(argslist) == False): # see extra.py
-		await message.channel.send("Your message could not be processed. Make sure you're following the rules defined in `{0}bot help`".format(serverprefix))
+		#await message.channel.send("Your message could not be processed. Make sure you're following the rules defined in `{0}bot help`".format(serverprefix))
 		return
 	if message.content.startswith("{0}bot".format(serverprefix)):
 		if(argslist[1] == "help"):
