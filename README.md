@@ -26,7 +26,11 @@ user_agent=android:com.example.myredditapp:v1.2.3 (by u/kemitche)
 
 You can learn about praw.ini [here](https://praw.readthedocs.io/en/latest/getting_started/configuration/prawini.html).
 
-Invite your bot to the discord server(s) of your choice and run the file.
+Invite your bot to the discord server(s) of your choice and run the file. If you run the file like this
+
+`./main.py norepo`
+
+it disables the `bot repo` command. This could be useful if you don't want to show developer information
 
 Alternatively, you can just use [this](https://discordapp.com/api/oauth2/authorize?client_id=705130799082635345&permissions=0&scope=bot) pre-running bot that I use.
 

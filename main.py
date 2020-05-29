@@ -5,6 +5,11 @@ import praw # "python reddit api wrapper"
 import json
 import time
 import extra
+from sys import argv as cliargs
+
+norepo = False
+if("norepo" in cliargs):
+	norepo = True
 
 with open("tokenfile", "r") as tokenfile:
 	token=tokenfile.read()
@@ -48,7 +53,7 @@ async def on_message(message):
 		return
 	args = message.content.replace(serverprefix,"") # args is everything after the prefix
 	argslist = args.split(" ") # gets args as a list. obviously.
-	if(extra.get_sanitized(argslist) == False): # see extra.py
+	if(not extra.get_sanitized(argslist)): # see extra.py
 		#await message.channel.send("Your message could not be processed. Make sure you're following the rules defined in `{0}bot help`".format(serverprefix))
 		return
 	if message.content.startswith("{0}bot".format(serverprefix)):
@@ -63,7 +68,7 @@ async def on_message(message):
 			prefixesfile.write(json.dumps(prefixes))
 			prefixesfile.close()
 			await message.channel.send(embed=prefixsuccessmessage)
-		if(argslist[1] == "repo"):
+		if(argslist[1] == "repo" and not norepo):
 			await message.channel.send(embed=repomessage)
 		return
 	if message.content.startswith(serverprefix):
