@@ -50,6 +50,8 @@ async def on_message(message):
 	if (message.guild != None):
 		if(extra.dictionary_contains(prefixes, str(message.guild.id))):
 			serverprefix = prefixes[str(message.guild.id)]
+		else:
+			serverprefix = "~"
 	else:
 		serverprefix = "~"
 	if not message.content.startswith(serverprefix):
