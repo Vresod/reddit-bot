@@ -29,5 +29,11 @@
 			"Language: Python",
 			"Developer's Discord: Vresod#3459"
 		]
+	},
+	"prefix_directmessage": {
+		"title": "Task Failed",
+		"description": [
+			"Changing the prefix in direct messages is not currently supported or functional."
+		]
 	}
 }
