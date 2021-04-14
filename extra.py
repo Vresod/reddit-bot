@@ -1,48 +1,46 @@
 # needed for is_real_subreddit()
-import praw
-reddit = praw.Reddit("bot")
+import discord
+from discord.ext import commands
 
-# i dont know what to name this. i need an equivalent to function(args){return args} in javascript
-def test_if_can_be_converted_to_int(integer_as_string):
-	try:
-		int(integer_as_string)
-		return True
-	except:
-		return False
-# uses praw errors to check for real subs
-def is_real_subreddit(unknown_subreddit):
-	try:
-		for submission in reddit.subreddit(unknown_subreddit).hot(limit=1):
-			submission.title
-		return True
-	except:
-		return False
-# a large-ish function that i didn't want in the main file.
-def get_sanitized(argumentlist):
-	if(
-		(len(argumentlist) == 2 or len(argumentlist) == 3) and
-		(
-			(len(argumentlist) == 2 and argumentlist[0] + argumentlist[1] == "bothelp") or
-			(len(argumentlist) == 2 and argumentlist[0] + argumentlist[1] == "botrepo") or
-			(len(argumentlist) == 3 and argumentlist[0] + argumentlist[1] == "botprefix") or
-			(len(argumentlist) == 3 and is_real_subreddit(argumentlist[0]) and test_if_can_be_converted_to_int(argumentlist[1]))
-		)
-	):
-		return True
-	else:
-		return False
-# needed to make runtime/prefixes.json if it doesn't exist, like first time runs
-def file_exists(path):
-	try:
-		with open(path,"r") as x:
-			x.read()
-			return True
-	except:
-		return False
-# determine if a dictionary contains a thing
-def dictionary_contains(dictionary, thing):
-	try:
-		dictionary[str(thing)]
-		return True
-	except:
-		return False
+class MyHelpCommand(commands.DefaultHelpCommand):
+	def __init__(self, **options):
+		self.paginator = commands.Paginator()
+		super().__init__(**options)
+		self.paginator.prefix = ""
+		self.paginator.suffix = ""
+		self.no_category = "Other"
+	def add_indented_commands(self, commands, *, heading, max_size=None):
+		if not commands:
+			return
+		self.paginator.add_line(f"**{heading}**")
+		max_size = max_size or self.get_max_size(commands)
+		get_width = discord.utils._string_width
+		for command in commands:
+			name = f"{command.name}"
+			width = max_size - (get_width(name) - len(name))
+			entry = "{0}{1:<{width}}: *{2}*".format(self.indent * " ", name, command.short_doc, width=width)
+			self.paginator.add_line(self.shorten_text(entry))
+	def get_ending_note(self):
+		command_name = self.invoked_with
+		return "Type `{0}{1} <command>` for more info on a command.\n".format(self.clean_prefix, command_name)
+	def add_command_formatting(self, command):
+		if command.description:
+			self.paginator.add_line(command.description, empty=True)
+		elif command.brief:
+			self.paginator.add_line(command.brief,empty=True)
+		signature = self.get_command_signature(command)
+		self.paginator.add_line(f"`{signature}`""", empty=True)
+
+		if command.help:
+			try:
+				self.paginator.add_line(command.help, empty=True)
+			except RuntimeError:
+				for line in command.help.splitlines():
+					self.paginator.add_line(line)
+				self.paginator.add_line()
+	async def send_pages(self):
+		destination = self.get_destination()
+		e = discord.Embed(title="Help",color=discord.Color.blurple(), description="")
+		for page in self.paginator.pages:
+			e.description += page
+		await destination.send(embed=e)
