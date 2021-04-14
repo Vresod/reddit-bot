@@ -3,7 +3,7 @@
 import discord
 from discord import embeds
 from discord.ext import commands
-import praw # "python reddit api wrapper"
+import asyncpraw as praw # "python reddit api wrapper"
 import json
 import time
 import extra
@@ -35,24 +35,28 @@ async def on_guild_join(guild:discord.Guild):
 
 @client.command(aliases=["b"])
 async def browse(ctx,sub,amount,listing):
-		subreddit = reddit.subreddit(sub)
+		amount = int(amount)
+		if amount > 30:
+			await ctx.send("you are over the limit of 30 posts. try doing less.")
+			return
+		subreddit = await reddit.subreddit(sub)
 		if listing == "hot":
-			listing = subreddit.hot
+			listing_cl = subreddit.hot
 		elif listing == "top":
-			listing = subreddit.top
+			listing_cl = subreddit.top
 		elif listing == "new":
-			listing = subreddit.new
+			listing_cl = subreddit.new
 		elif listing == "random":
-			listing = subreddit.random_rising
+			listing_cl = subreddit.random_rising
 		elif listing == "rising":
-			listing = subreddit.rising
+			listing_cl = subreddit.rising
 		elif listing == "controversial":
-			listing = subreddit.controversial
+			listing_cl = subreddit.controversial
 		stickiedposts = 0
-		for stickytest in listing(limit=2):
+		async for stickytest in listing_cl(limit=2):
 			if(stickytest.stickied):
 				stickiedposts += 1
-		for submission in listing(limit=int(amount) + stickiedposts):
+		async for submission in listing_cl(limit=amount + stickiedposts):
 			if submission.is_self:
 				if(len(submission.selftext) > 2048): # dealing with the limit on embedded text
 					content = submission.selftext[:2045] + "..."
@@ -64,11 +68,14 @@ async def browse(ctx,sub,amount,listing):
 				continue
 			if(submission.over_18 and not ctx.channel.is_nsfw()):
 				await ctx.send("NSFW post. Please try again in an NSFW channel.")
-			else:
+			else: # the only situation in which the post gets posted
 				if(len(submission.title) > 256): # title length limit
 					sanitized_title = submission.title[:253] + "..."
 				else:
 					sanitized_title = submission.title
+				if not submission.is_self and 'i.redd.it' not in submission.url:
+					await ctx.send("{0} post from r/{1}:\n{2}".format(listing.title(),submission.subreddit,submission.url))
+					continue
 				temp_embed = discord.Embed(
 					title=sanitized_title,
 					url=submission.shortlink,
@@ -80,6 +87,7 @@ async def browse(ctx,sub,amount,listing):
 				else:
 					temp_embed.set_image(url=content)
 				await ctx.send("{0} post from r/{1}:".format(listing.title(),submission.subreddit),embed=temp_embed)
+
 
 @client.command()
 async def repo(ctx):
