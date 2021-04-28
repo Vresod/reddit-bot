@@ -2,13 +2,13 @@
 
 import asyncprawcore
 import discord
-from discord import embeds
 from discord.ext import commands
 import asyncpraw as praw # "python reddit api wrapper"
 import extra
 import sys
 from sys import argv as cliargs
 import traceback
+import re
 
 norepo = False
 if("norepo" in cliargs):
@@ -59,11 +59,14 @@ async def browse(ctx,sub,amount = 5,listing = "hot"):
 		if amount > 30:
 			await ctx.send("you are over the limit of 30 posts. try doing less.")
 			return
-		subreddit = await reddit.subreddit(sub)
+		subreddit = await reddit.subreddit(sub,fetch=True)
 		try:
 			async for _ in subreddit.hot(limit=1): pass
 		except asyncprawcore.exceptions.NotFound:
 			await ctx.send(embed=discord.Embed(title="Subreddit not found!",description="The subreddit you are searching for could not be found."))
+			return
+		if subreddit.over18 and not ctx.channel.is_nsfw():
+			await ctx.send(embed=discord.Embed(title="Error",description="NSFW Subreddit in Non-NSFW Channel",color=discord.Color.red()))
 			return
 		if listing == "hot":
 			listing_cl = subreddit.hot
@@ -111,11 +114,60 @@ async def browse(ctx,sub,amount = 5,listing = "hot"):
 					temp_embed.description = content
 				else:
 					temp_embed.set_image(url=content)
-				await ctx.send(f"{listing.title()} post from r/{submission.subreddit()}:",embed=temp_embed)
+				await ctx.send(f"{listing.title()} post from r/{submission.subreddit}:",embed=temp_embed)
 
 
 @client.command(brief="show github repo")
 async def repo(ctx):
 	await ctx.send(embed=repomessage)
+
+@client.command(aliases=["p"])
+async def post(ctx,post):
+	"""
+	valid post formats:
+	https://redd.it/2gmzqe
+	https://reddit.com/comments/2gmzqe/
+	https://www.reddit.com/r/redditdev/comments/2gmzqe/praw_https/
+	https://www.reddit.com/gallery/2gmzqe
+	"""
+	post_id = ""
+	if not re.match("^[a-z0-9]$",post):
+		try:
+			post_id = praw.models.Submission.id_from_url(post)
+		except praw.exceptions.InvalidURL:
+			await ctx.send("Your submission is invalid. Check your url or post id.")
+			return
+	else:
+		post_id = post
+	print(post_id)
+	submission = await reddit.submission(id=post_id)
+	if submission.is_self:
+		if(len(submission.selftext) > 2048): # dealing with the limit on embedded text
+			content = submission.selftext[:2045] + "..."
+		else:
+			content = submission.selftext
+	else:
+		content = submission.url
+	if(submission.over_18 and not ctx.channel.is_nsfw()):
+		await ctx.send("NSFW post. Please try again in an NSFW channel.")
+	else: # the only situation in which the post gets posted
+		if(len(submission.title) > 256): # title length limit
+			sanitized_title = submission.title[:253] + "..."
+		else:
+			sanitized_title = submission.title
+		if not submission.is_self and not submission.url.endswith(acceptable_file_exts): # if its not an image that can be read by discord
+			await ctx.send("Post from r/{0}:\n```\n{1}\n```\n{2}".format(submission.subreddit,sanitized_title,submission.url))
+			return
+		temp_embed = discord.Embed(
+			title=sanitized_title,
+			url=submission.shortlink,
+			color=discord.Color.from_rgb(255,127,0)
+		)
+		temp_embed.set_footer(text=f"posted by u/{submission.author}")
+		if submission.is_self:
+			temp_embed.description = content
+		else:
+			temp_embed.set_image(url=content)
+		await ctx.send(f"Post from r/{submission.subreddit}:",embed=temp_embed)
 
 client.run(token)
